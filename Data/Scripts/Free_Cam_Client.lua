@@ -1,3 +1,5 @@
+---@diagnostic disable: assign-type-mismatch
+
 ---@type Free_Cam
 local Free_Cam = require(script:GetCustomProperty("Free_Cam"))
 

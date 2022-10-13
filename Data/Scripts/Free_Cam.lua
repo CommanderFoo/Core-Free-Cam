@@ -52,7 +52,6 @@ function Free_Cam.toggle_settings(player)
 		Free_Cam.players[player].settings = Free_Cam.FREE_CAM_SETTINGS
 		Free_Cam.FREE_CAM_SETTINGS:ApplyToPlayer(player)
 
-		print(Free_Cam.players[player].fly_speed)
 		if(Free_Cam.players[player].fly_speed > 0) then
 			player.maxFlySpeed = Free_Cam.players[player].fly_speed
 		end
@@ -163,7 +162,6 @@ function Free_Cam.disable_fly(player)
 end
 
 function Free_Cam.set_speed(player, speed)
-	print(speed)
 	player.maxFlySpeed = speed
 	Free_Cam.players[player].fly_speed = speed
 end

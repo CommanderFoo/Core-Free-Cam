@@ -1,4 +1,4 @@
----@diagnostic disable: assign-type-mismatch
+---@diagnostic disable: assign-type-mismatch, undefined-field
 
 ---@type Free_Cam
 local Free_Cam = require(script:GetCustomProperty("Free_Cam"))
@@ -110,6 +110,7 @@ local max_acel = 5000
 local bar_width = 372
 
 local states = {}
+local ui_states = {}
 
 local function remap(value, in_min, in_max, out_min, out_max)
 	return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -136,6 +137,7 @@ local function format_time(time)
 
 	return str
 end
+
 local function show_settings()
 	if(is_showing or not is_enabled) then
 		return
@@ -203,11 +205,15 @@ local function toggle_ui(button)
 	end
 
 	for index, ui in ipairs(all_ui) do
-		if(ui ~= CONTAINER) then
-			if(ui.visibility == Visibility.FORCE_OFF) then
-				ui.visibility = Visibility.INHERIT
-			else
+		if(ui ~= CONTAINER and ui.isScreenSpace) then
+			if(ui_states[ui] == nil) then
+				ui_states[ui] = ui.visibility
+			end
+
+			if(state) then
 				ui.visibility = Visibility.FORCE_OFF
+			else
+				ui.visibility = ui_states[ui]
 			end
 		end
 	end

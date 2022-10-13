@@ -3,6 +3,7 @@ Assets {
   Name: "Free Cam"
   PlatformAssetType: 29
   SerializationVersion: 119
+  VirtualFolderPath: "Free Cam"
   BindingSetAsset {
     Bindings {
       BindingType {
@@ -48,6 +49,30 @@ Assets {
       }
       Action: "Show/Hide Settings"
       Description: "Show or hide the free cam settings panel."
+      CoreBehavior {
+        Value: "mc:ecorebehavior:none"
+      }
+      IsEnabledOnStart: true
+    }
+    Bindings {
+      BindingType {
+        Value: "mc:ebindingtype:basic"
+      }
+      BasicBindingData {
+        BasicInputs {
+          KeyboardPrimary {
+            Value: "mc:ebindingkeyboard:q"
+          }
+          KeyboardSecondary {
+            Value: "mc:ebindingkeyboard:none"
+          }
+          Controller {
+            Value: "mc:ebindinggamepad:none"
+          }
+        }
+      }
+      Action: "Add Bookmark"
+      Description: "Bookmark the current location."
       CoreBehavior {
         Value: "mc:ecorebehavior:none"
       }

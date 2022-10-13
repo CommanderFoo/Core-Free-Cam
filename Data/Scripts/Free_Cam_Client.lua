@@ -337,9 +337,6 @@ SPEED_TXT.text = "Speed (" .. number_format(math.floor(speed)) .. ")"
 decel_speed = remap(DECEL_BAR.width, 0, bar_width, min_acel, max_acel)
 DECEL_TXT.text = "Deceleration (" .. number_format(math.floor(decel_speed)) .. ")"
 
-Events.BroadcastToServer("FreeCam.Speed", speed)
-Events.BroadcastToServer("FreeCam.Decel", decel_speed)
-
 TOGGLE_UI.pressedEvent:Connect(toggle_ui)
 LOCK_CAMERA.pressedEvent:Connect(toggle_locked_camera)
 SHOW_PLAYER.pressedEvent:Connect(toggle_player)
@@ -354,3 +351,8 @@ DECEL_HIT.releasedEvent:Connect(on_decel_hit_released)
 ADD_BOOKMARK.pressedEvent:Connect(on_add_bookmark_pressed)
 
 Input.actionPressedEvent:Connect(on_action_pressed)
+
+Task.Wait()
+
+Events.BroadcastToServer("FreeCam.Speed", speed)
+Events.BroadcastToServer("FreeCam.Decel", decel_speed)

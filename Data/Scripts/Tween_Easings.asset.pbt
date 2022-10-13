@@ -11,5 +11,6 @@ Assets {
   }
   SerializationVersion: 119
   DirectlyPublished: true
+  VirtualFolderPath: "Free Cam"
   VirtualFolderPath: "Tween"
 }

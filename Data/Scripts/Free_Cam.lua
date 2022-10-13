@@ -1,3 +1,5 @@
+---@diagnostic disable: assign-type-mismatch
+
 local PERMISSIONS = require(script:GetCustomProperty("Permissions"))
 
 ---@class Free_Cam
@@ -49,6 +51,15 @@ function Free_Cam.toggle_settings(player)
 	else
 		Free_Cam.players[player].settings = Free_Cam.FREE_CAM_SETTINGS
 		Free_Cam.FREE_CAM_SETTINGS:ApplyToPlayer(player)
+
+		print(Free_Cam.players[player].fly_speed)
+		if(Free_Cam.players[player].fly_speed > 0) then
+			player.maxFlySpeed = Free_Cam.players[player].fly_speed
+		end
+
+		if(Free_Cam.players[player].decel_speed) then
+			player.brakingDecelerationFlying = Free_Cam.players[player].decel_speed
+		end
 	end
 end
 
@@ -130,7 +141,9 @@ function Free_Cam.player_joined(player)
 		enabled = false,
 		visible = player.isVisible,
 		flying = false,
-		settings = Free_Cam.DEFAULT_SETTINGS
+		settings = Free_Cam.DEFAULT_SETTINGS,
+		fly_speed = 0,
+		decel_speed = 0
 		
 	}
 end
@@ -150,11 +163,14 @@ function Free_Cam.disable_fly(player)
 end
 
 function Free_Cam.set_speed(player, speed)
+	print(speed)
 	player.maxFlySpeed = speed
+	Free_Cam.players[player].fly_speed = speed
 end
 
 function Free_Cam.set_decel(player, speed)
 	player.brakingDecelerationFlying = speed
+	Free_Cam.players[player].decel_speed = speed
 end
 
 function Free_Cam.move(player, pos, rot)

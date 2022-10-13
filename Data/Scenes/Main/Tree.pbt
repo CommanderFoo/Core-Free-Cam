@@ -15,7 +15,7 @@ Objects {
     }
   }
   ChildIds: 1185996502388679129
-  ChildIds: 7668301925077020173
+  ChildIds: 196397444210602610
   UnregisteredParameters {
   }
   Collidable_v2 {
@@ -35,7 +35,7 @@ Objects {
   IsReplicationEnabledByDefault: true
 }
 Objects {
-  Id: 7668301925077020173
+  Id: 196397444210602610
   Name: "Free Cam"
   Transform {
     Location {
@@ -49,38 +49,38 @@ Objects {
     }
   }
   ParentId: 4781671109827199097
-  UnregisteredParameters {
-    Overrides {
-      Name: "cs:DefaultSettings"
-      ObjectReference {
-        SelfId: 4226120016796708080
+  TemplateInstance {
+    ParameterOverrideMap {
+      key: 17005143668727999315
+      value {
+        Overrides {
+          Name: "Name"
+          String: "Free Cam"
+        }
+        Overrides {
+          Name: "Position"
+          Vector {
+          }
+        }
+        Overrides {
+          Name: "Rotation"
+          Rotator {
+          }
+        }
+        Overrides {
+          Name: "Scale"
+          Vector {
+            X: 1
+            Y: 1
+            Z: 1
+          }
+        }
       }
     }
-    Overrides {
-      Name: "cs:DefaultPreset"
-      String: "Default"
+    TemplateAsset {
+      Id: 2887321257754545984
     }
   }
-  Collidable_v2 {
-    Value: "mc:ecollisionsetting:inheritfromparent"
-  }
-  Visible_v2 {
-    Value: "mc:evisibilitysetting:inheritfromparent"
-  }
-  CameraCollidable {
-    Value: "mc:ecollisionsetting:inheritfromparent"
-  }
-  EditorIndicatorVisibility {
-    Value: "mc:eindicatorvisibility:visiblewhenselected"
-  }
-  Folder {
-    IsFilePartition: true
-    FilePartitionName: "Free Cam"
-  }
-  NetworkRelevanceDistance {
-    Value: "mc:eproxyrelevance:critical"
-  }
-  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 1185996502388679129
@@ -543,7 +543,7 @@ Objects {
   Name: "Spawn Point"
   Transform {
     Location {
-      Z: 165
+      Z: 150
     }
     Rotation {
     }

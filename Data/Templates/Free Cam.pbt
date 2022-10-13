@@ -3421,6 +3421,24 @@ Assets {
               SubObjectId: 13182469318033529815
             }
           }
+          Overrides {
+            Name: "cs:HideKey"
+            ObjectReference {
+              SubObjectId: 58007404323908719
+            }
+          }
+          Overrides {
+            Name: "cs:FreeCamHeader"
+            ObjectReference {
+              SubObjectId: 3581673883877451675
+            }
+          }
+          Overrides {
+            Name: "cs:BookmarkHeader"
+            ObjectReference {
+              SubObjectId: 16294643872735434022
+            }
+          }
         }
         Collidable_v2 {
           Value: "mc:ecollisionsetting:inheritfromparent"

@@ -77,6 +77,15 @@ local ADD_BOOKMARK = script:GetCustomProperty("AddBookmark"):WaitForObject()
 
 local BOOKMARK_TEMPLATE = script:GetCustomProperty("BookmarkTemplate")
 
+---@type UIText
+local HIDE_KEY = script:GetCustomProperty("HideKey"):WaitForObject()
+
+---@type UIText
+local FREE_CAM_HEADER = script:GetCustomProperty("FreeCamHeader"):WaitForObject()
+
+---@type UIText
+local BOOKMARK_HEADER = script:GetCustomProperty("BookmarkHeader"):WaitForObject()
+
 ---@type UIImage
 local BOOKMARK_PANEL = script:GetCustomProperty("BookmarkPanel"):WaitForObject()
 
@@ -338,6 +347,10 @@ SPEED_TXT.text = "Speed (" .. number_format(math.floor(speed)) .. ")"
 
 decel_speed = remap(DECEL_BAR.width, 0, bar_width, min_acel, max_acel)
 DECEL_TXT.text = "Deceleration (" .. number_format(math.floor(decel_speed)) .. ")"
+
+HIDE_KEY.text = "[" .. Input.GetActionInputLabel("Show/Hide Settings") .. "]"
+FREE_CAM_HEADER.text = "FREE CAM [" .. Input.GetActionInputLabel("Enable/Disable") .. "]"
+BOOKMARK_HEADER.text = "ADD BOOKMARK [" .. Input.GetActionInputLabel("Add Bookmark") .. "]"
 
 TOGGLE_UI.pressedEvent:Connect(toggle_ui)
 LOCK_CAMERA.pressedEvent:Connect(toggle_locked_camera)

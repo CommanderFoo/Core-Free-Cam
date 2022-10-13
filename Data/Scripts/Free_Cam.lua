@@ -67,6 +67,10 @@ function Free_Cam.reset(player)
 	player.isVisible = true
 	player.isMovementEnabled = true
 	player:ActivateWalking()
+
+	if(Free_Cam.players[player].stance ~= nil) then
+		player.animationStance = Free_Cam.players[player].stance
+	end
 end
 
 function Free_Cam.set(player)
@@ -77,8 +81,13 @@ function Free_Cam.set(player)
 
 	if(Free_Cam.players[player].visible) then
 		player.isVisible = true
+
+		if(Free_Cam.players[player].stance) then
+			player.animationStance = Free_Cam.players[player].stance
+		end
 	else
 		player.isVisible = false
+		player.animationStance = "unarmed_bind_pose"
 	end
 
 	if(Free_Cam.players[player].flying) then
@@ -126,11 +135,21 @@ end
 function Free_Cam.show_player(player)
 	Free_Cam.players[player].visible = true
 	player.isVisible = true
+
+	if(Free_Cam.players[player].stance ~= nil) then
+		player.animationStance = Free_Cam.players[player].stance
+	end
 end
 
 function Free_Cam.hide_player(player)
 	Free_Cam.players[player].visible = false
 	player.isVisible = false
+
+	if(Free_Cam.players[player].stance == nil) then
+		Free_Cam.players[player].stance = player.animationStance
+	end
+
+	player.animationStance = "unarmed_bind_pose"
 end
 
 function Free_Cam.player_joined(player)

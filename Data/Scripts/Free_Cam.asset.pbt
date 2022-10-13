@@ -19,4 +19,5 @@ Assets {
     }
   }
   SerializationVersion: 119
+  VirtualFolderPath: "Free Cam"
 }

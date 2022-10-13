@@ -67,7 +67,19 @@ local DECEL_BAR = script:GetCustomProperty("DecelBar"):WaitForObject()
 ---@type UIText
 local DECEL_TXT = script:GetCustomProperty("DecelTxt"):WaitForObject()
 
+---@type UIScrollPanel
+local LIST = script:GetCustomProperty("List"):WaitForObject()
+
+---@type UIButton
+local ADD_BOOKMARK = script:GetCustomProperty("AddBookmark"):WaitForObject()
+
+local BOOKMARK_TEMPLATE = script:GetCustomProperty("BookmarkTemplate")
+
+---@type UIImage
+local BOOKMARK_PANEL = script:GetCustomProperty("BookmarkPanel"):WaitForObject()
+
 local LOCAL_PLAYER = Game.GetLocalPlayer()
+
 local is_showing = false
 local tween = nil
 local all_ui = World.FindObjectsByType("UIContainer")
@@ -76,6 +88,15 @@ local speed_hit_pressed = false
 local decel_hit_pressed = false
 local speed = 0
 local decel_speed = 0
+local list_offset = 0
+
+local min_speed = 100
+local max_speed = 10000
+
+local min_acel = 0
+local max_acel = 5000
+
+local bar_width = 372
 
 local states = {}
 
@@ -87,6 +108,23 @@ local function number_format(i)
 	return tostring(i):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
 end
 
+local function format_time(time)
+	local str = time.hour .. ":"
+
+	if(time.minute < 10) then
+		str = str .. "0"
+	end
+
+	str = str .. time.minute .. ":"
+
+	if(time.second < 10) then
+		str = str .. "0"
+	end
+
+	str = str .. time.second
+
+	return str
+end
 local function show_settings()
 	if(is_showing or not is_enabled) then
 		return
@@ -110,7 +148,7 @@ local function hide_settings()
 		return
 	end
 
-	tween = Tween:new(.5, { x = FREE_CAM_PANEL.x }, { x = -415 })
+	tween = Tween:new(.5, { x = FREE_CAM_PANEL.x }, { x = -450 })
 	tween:set_easing(Tween.Easings.In_Back)
 
 	UI.SetCanCursorInteractWithUI(false)
@@ -122,27 +160,6 @@ local function hide_settings()
 	end)
 
 	is_showing = false
-end
-
-local function on_action_pressed(player, action)
-	if(Free_Cam.has_permission(player)) then
-		if(action == "Enable/Disable") then
-			is_enabled = not is_enabled
-
-			if(is_enabled) then
-				show_settings()
-			else
-				hide_settings()
-			end
-
-		elseif(action == "Show/Hide Settings") then
-			if(is_showing) then
-				hide_settings()
-			else
-				show_settings()
-			end
-		end
-	end
 end
 
 local function toggle_state(obj)
@@ -239,6 +256,53 @@ local function on_decel_hit_released(button)
 	Events.BroadcastToServer("FreeCam.Decel", decel_speed)
 end
 
+local function on_add_bookmark_pressed()
+	if(BOOKMARK_PANEL.visibility == Visibility.FORCE_OFF) then
+		BOOKMARK_PANEL.visibility = Visibility.INHERIT
+	end
+
+	---@type UIButton
+	local entry = World.SpawnAsset(BOOKMARK_TEMPLATE, { parent = LIST })
+	local now = DateTime.CurrentTime({isLocal = true})
+
+	entry.y = list_offset
+	list_offset = list_offset + entry.height
+
+	entry.text = format_time(now) .. " (" .. tostring(LOCAL_PLAYER:GetWorldPosition()) .. ")"
+
+	local pos = LOCAL_PLAYER:GetWorldPosition()
+	local rot = LOCAL_PLAYER:GetWorldRotation()
+	local view_rot = LOCAL_PLAYER:GetLookWorldRotation()
+
+	entry.pressedEvent:Connect(function()
+		Events.BroadcastToServer("FreeCam.Move", pos, rot)
+		LOCAL_PLAYER:SetLookWorldRotation(view_rot)
+	end)
+end
+
+local function on_action_pressed(player, action)
+	if(Free_Cam.has_permission(player)) then
+		if(action == "Enable/Disable") then
+			is_enabled = not is_enabled
+
+			if(is_enabled) then
+				show_settings()
+			else
+				hide_settings()
+			end
+
+		elseif(action == "Show/Hide Settings") then
+			if(is_showing) then
+				hide_settings()
+			else
+				show_settings()
+			end
+		elseif(action == "Add Bookmark") then
+			on_add_bookmark_pressed()
+		end
+	end
+end
+
 function Tick(dt)
 	if(tween ~= nil) then
 		tween = tween:tween(dt)
@@ -249,28 +313,28 @@ function Tick(dt)
 			local cursor_pos = Input.GetCursorPosition()
 			local pos = SPEED_BAR:GetAbsolutePosition()
 
-			if(cursor_pos.x > pos.x and cursor_pos.x < (370 + pos.x)) then
+			if(cursor_pos.x > pos.x and cursor_pos.x < (bar_width + pos.x)) then
 				SPEED_BAR.width = math.floor(cursor_pos.x - pos.x)
-				speed = remap(SPEED_BAR.width, 0, 370, 400, 10000)
+				speed = remap(SPEED_BAR.width, 0, bar_width, min_speed, max_speed)
 				SPEED_TXT.text = "Speed (" .. number_format(math.floor(speed)) .. ")"
 			end
 		elseif(decel_hit_pressed) then
 			local cursor_pos = Input.GetCursorPosition()
 			local pos = SPEED_BAR:GetAbsolutePosition()
 
-			if(cursor_pos.x > pos.x and cursor_pos.x < (370 + pos.x)) then
+			if(cursor_pos.x > pos.x and cursor_pos.x < (bar_width + pos.x)) then
 				DECEL_BAR.width = math.floor(cursor_pos.x - pos.x)
-				decel_speed = remap(DECEL_BAR.width, 0, 370, 0, 5000)
+				decel_speed = remap(DECEL_BAR.width, 0, 370, min_acel, max_acel)
 				DECEL_TXT.text = "Deceleration (" .. number_format(math.floor(decel_speed)) .. ")"
 			end
 		end
 	end
 end
 
-speed = remap(SPEED_BAR.width, 0, 370, 400, 10000)
+speed = remap(SPEED_BAR.width, 0, bar_width, min_speed, max_speed)
 SPEED_TXT.text = "Speed (" .. number_format(math.floor(speed)) .. ")"
 
-decel_speed = remap(DECEL_BAR.width, 0, 370, 0, 5000)
+decel_speed = remap(DECEL_BAR.width, 0, bar_width, min_acel, max_acel)
 DECEL_TXT.text = "Deceleration (" .. number_format(math.floor(decel_speed)) .. ")"
 
 Events.BroadcastToServer("FreeCam.Speed", speed)
@@ -286,5 +350,7 @@ SPEED_HIT.releasedEvent:Connect(on_speed_hit_released)
 
 DECEL_HIT.pressedEvent:Connect(on_decel_hit_pressed)
 DECEL_HIT.releasedEvent:Connect(on_decel_hit_released)
+
+ADD_BOOKMARK.pressedEvent:Connect(on_add_bookmark_pressed)
 
 Input.actionPressedEvent:Connect(on_action_pressed)

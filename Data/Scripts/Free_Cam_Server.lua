@@ -8,9 +8,6 @@ local Free_Cam = require(script:GetCustomProperty("Free_Cam"))
 local DEFAULT_SETTINGS = ROOT:GetCustomProperty("DefaultSettings"):WaitForObject()
 
 ---@type PlayerSettings
-local PLAYER_SETTINGS = script:GetCustomProperty("PlayerSettings"):WaitForObject()
+local FREE_CAM_SETTINGS = script:GetCustomProperty("FreeCamSettings"):WaitForObject()
 
-local DEFAULT_PRESET = ROOT:GetCustomProperty("DefaultPreset")
-
-Free_Cam.set_player_settings(DEFAULT_SETTINGS, PLAYER_SETTINGS)
-Free_Cam.set_default_preset(DEFAULT_PRESET)
+Free_Cam.set_player_settings(DEFAULT_SETTINGS, FREE_CAM_SETTINGS)

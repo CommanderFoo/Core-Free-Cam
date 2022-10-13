@@ -1,24 +1,33 @@
 local PERMISSIONS = require(script:GetCustomProperty("Permissions"))
-local FREE_CAM_PRESETS = require(script:GetCustomProperty("FreeCamPresets"))
 
 ---@class Free_Cam
 local Free_Cam = {
 
 	---@type PlayerSettings
-	PLAYER_SETTINGS = nil,
-
-	---@type PlayerSettings
 	DEFAULT_SETTINGS = nil,
 
-	default_preset = nil,
+	---@type PlayerSettings
+	FREE_CAM_SETTINGS = nil,
 
 	players = {}
 
 }
 
 function Free_Cam.set_player_settings(default_settings, settings)
-	Free_Cam.PLAYER_SETTINGS = settings
-	Free_Cam.DEFAULT_SETTINGS = default_settings
+	Free_Cam.FREE_CAM_SETTINGS = settings
+
+	if(default_settings ~= nil) then
+		Free_Cam.DEFAULT_SETTINGS = default_settings
+	else
+		local player_settings = World.FindObjectsByType("PlayerSettings")
+
+		for index, settings in ipairs(player_settings) do
+			if(settings ~= default_settings) then
+				Free_Cam.DEFAULT_SETTINGS = settings
+				break
+			end
+		end
+	end
 end
 
 function Free_Cam.has_permission(player)
@@ -29,33 +38,18 @@ function Free_Cam.has_permission(player)
 	return false
 end
 
-function Free_Cam.set_default_preset(preset)
-	if(FREE_CAM_PRESETS[preset]) then
-		Free_Cam.default_preset = FREE_CAM_PRESETS[preset]
-	end
-end
-
-function Free_Cam.apply_preset(player, preset)
-	preset = preset or Free_Cam.default_preset
-
-	player.brakingDecelerationFlying = preset.Deceleration
-	player.maxFlySpeed = preset.Speed
-end
-
 function Free_Cam.toggle_settings(player)
 	if(not Environment.IsServer()) then
 		return
 	end
 
-	if(player.serverUserData.settings == Free_Cam.DEFAULT_SETTINGS) then
-		player.serverUserData.settings = Free_Cam.PLAYER_SETTINGS
-		Free_Cam.PLAYER_SETTINGS:ApplyToPlayer(player)
-	else
-		player.serverUserData.settings = Free_Cam.DEFAULT_SETTINGS
+	if(Free_Cam.players[player].settings == Free_Cam.FREE_CAM_SETTINGS) then
+		Free_Cam.players[player].settings = Free_Cam.DEFAULT_SETTINGS
 		Free_Cam.DEFAULT_SETTINGS:ApplyToPlayer(player)
+	else
+		Free_Cam.players[player].settings = Free_Cam.FREE_CAM_SETTINGS
+		Free_Cam.FREE_CAM_SETTINGS:ApplyToPlayer(player)
 	end
-
-	Free_Cam.apply_preset(player)
 end
 
 function Free_Cam.reset(player)
@@ -135,7 +129,8 @@ function Free_Cam.player_joined(player)
 		look_control_mode = player.lookControlMode,
 		enabled = false,
 		visible = player.isVisible,
-		flying = false
+		flying = false,
+		settings = Free_Cam.DEFAULT_SETTINGS
 		
 	}
 end
@@ -162,6 +157,11 @@ function Free_Cam.set_decel(player, speed)
 	player.brakingDecelerationFlying = speed
 end
 
+function Free_Cam.move(player, pos, rot)
+	player:SetWorldPosition(pos)
+	player:SetWorldRotation(rot)
+end
+
 if(Environment.IsServer()) then
 	Events.ConnectForPlayer("FreeCam.Camera.Lock", Free_Cam.lock_camera)
 	Events.ConnectForPlayer("FreeCam.Camera.Unlock", Free_Cam.unlock_camera)
@@ -174,6 +174,8 @@ if(Environment.IsServer()) then
 
 	Events.ConnectForPlayer("FreeCam.Speed", Free_Cam.set_speed)
 	Events.ConnectForPlayer("FreeCam.Decel", Free_Cam.set_decel)
+
+	Events.ConnectForPlayer("FreeCam.Move", Free_Cam.move)
 
 	Game.playerJoinedEvent:Connect(Free_Cam.player_joined)
 	Game.playerLeftEvent:Connect(Free_Cam.player_left)
